@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <a href="{{ url_for('app.admin_messages') }}" class="btn btn-primary">View Appointment/Contact Messages</a>
+  <style>
+    .content {
+      display: flex;
+      justify-content: space-between;
+    }
+    .section {
+      width: 45%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="content">
+    <!-- Users Part -->
+    <div class="section">
+      <h2>Users</h2>
+      <ul>
+        {% for user in users %}
+          <li>
+            <strong>Username:</strong> {{ user.username }}<br>
+            <strong>Email:</strong> {{ user.Email }}<br>
+            <strong>Hashed Password:</strong> {{ user.password }}<br>
+            <form action="/delete-user/{{ user.id }}" method="POST">
+              <button type="submit">Delete</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+<div class="section">
+    <h2>Orders</h2>
+    <ul>
+      {% for order in orders %}
+        <li>
+          <h3><strong>Order ID:</strong> {{ order.id }}</h3> <!-- Make Order ID bold and larger -->
+          <strong>Username:</strong> {{ order.user.username }}<br>
+          <strong>Items:</strong>
+          <ul>
+              {% for item in order.items %}
+                  <li>
+                      <strong>Product Name:</strong> {{ item.product.name }}<br>
+                      <strong>Quantity:</strong> {{ item.quantity }}
+                  </li>
+              {% endfor %}
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  </div>
+
+</body>
+</html>
+  
+{% endblock %}
