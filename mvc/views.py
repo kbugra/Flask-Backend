@@ -56,7 +56,7 @@ def contact():
         contact_form = ContactFormModel(name=form.name.data, email=form.email.data, subject=form.subject.data, message=form.message.data)
         db.session.add(contact_form)
         db.session.commit()
-        return redirect(url_for('contact'))
+        return redirect(url_for('app.contact'))
     return render_template('contact.html', page_name="contact", form=form)
 
 @app_bp.route('/appointment', methods=['GET', 'POST'])
@@ -67,7 +67,7 @@ def appointment():
             appointment_form = AppointmentFormModel(guardian_name=form.guardian_name.data, guardian_email=form.guardian_email.data, child_name=form.child_name.data, child_age=form.child_age.data, message=form.message.data)
             db.session.add(appointment_form)
             db.session.commit()
-            return redirect(url_for('appointment'))
+            return redirect(url_for('app.appointment'))
         else:
             print(form.errors)
     return render_template('appointment.html', page_name="appointment", form=form)
@@ -77,7 +77,7 @@ def appointment():
 @login_required
 def checkout():
     if request.method == 'POST':
-        
+        # Fetch the user's current cart
         cart = Cart.query.filter_by(user_id=current_user.id, completed=False).first()
 
         if cart:
@@ -186,19 +186,21 @@ def apply():
 
     return render_template('call-to-action.html')
 
+bcrypt = Bcrypt()
+
 @app_bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        if bcrypt.check_password_hash(current_user.password, form.current_password.data):
+        if bcrypt.check_password_hash(current_user.password, form.current_password.data.encode('utf-8')):
             current_user.password = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
             db.session.commit()
             flash('Your password has been updated!', 'success')
             return redirect(url_for('app.dashboard', username=current_user.username))
         else:
             flash('Password is incorrect', 'danger')
-    return render_template('change_password.html', title='Change Password', form=form,page_name="change password")
+    return render_template('change_password.html', title='Change Password', form=form, page_name="change password")
 
 @app_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -280,7 +282,7 @@ def admin_dashboard():
     
     users = User.query.all()
     orders = Order.query.all()  
-    return render_template('admin_dashboard.html', users=users, orders=orders, page_name="admin dashboard")
+    return render_template('admin_dashboard.html', users=users, orders=orders,page_name="admin dashboard")
 
 @app_bp.route('/delete-user/<int:user_id>', methods=['POST'])
 @login_required
@@ -294,7 +296,7 @@ def delete_user(user_id):
         flash('User has been deleted.', 'success')
     else:
         flash('User not found.', 'danger')
-    return redirect(url_for('app.admin_dashboard'),page_name="admin dashboard")
+    return redirect(url_for('app.admin_dashboard'))
     
 
 @app_bp.route('/team')

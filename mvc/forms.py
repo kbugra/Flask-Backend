@@ -70,3 +70,8 @@ class UpdateForm(FlaskForm):
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
             
+class TeacherApplicationForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    experience = TextAreaField('Experience', validators=[DataRequired()])
+    submit = SubmitField('Submit')

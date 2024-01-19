@@ -1,12 +1,23 @@
 {%extends "base.html"%}
 {%block title%}Register{%endblock%}
+
 {%block content%}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Register Page</title>
-</head>
-<body>
+<style>
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column; /* Add this to stack the h1 and form vertically */
+        margin: 50px 0; /* Add some margin to the top and bottom */
+    }
+    .register-container form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+</style>
+
+<div class="register-container">
     <h1>Register</h1>
     <form action="{{ url_for('app.register') }}" method="post">
         {{form.hidden_tag()}}
@@ -14,8 +25,7 @@
         {{form.password}}
         {{form.Email}}
         {{form.submit}}
+        <p>Already have an account? <a href="{{ url_for('app.login') }}">Login</a></p>
     </form>
-    <p>Already have an account? <a href="{{ url_for('app.login') }}">Login</a></p>
-</body>
-</html>
+</div>
 {%endblock%}
