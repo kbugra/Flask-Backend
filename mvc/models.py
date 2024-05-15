@@ -15,6 +15,15 @@ class User(db.Model, UserMixin):
     cart = db.relationship('Cart', backref='user', lazy=True)
     orders = db.relationship('Order', backref='user', lazy=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'Email': self.Email,
+            'date_created': self.date_created,
+            'is_admin': self.is_admin
+        }
+
 class TeacherApplication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -36,6 +45,20 @@ class Product(db.Model):
     time = db.Column(db.String(50))
     capacity = db.Column(db.Integer)
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'price': self.price,
+            'image': self.image,
+            'teacher_id': self.teacher_id,
+            'timage': self.timage,
+            'tname': self.tname,
+            'age': self.age,
+            'time': self.time,
+            'capacity': self.capacity
+        }
+
 class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -48,18 +71,6 @@ class CartItem(db.Model):
     cart_id = db.Column(db.Integer, db.ForeignKey('cart.id'), nullable=False)
     quantity = db.Column(db.Integer, default=1)
 
-class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    date_ordered = db.Column(db.DateTime, default=datetime.utcnow)
-    items = db.relationship('OrderItem', backref='order', lazy=True)
-
-class OrderItem(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
-    quantity = db.Column(db.Integer, default=1)
-    
 class ContactFormModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
@@ -82,6 +93,14 @@ class Testimonial(db.Model):
     name = db.Column(db.String(100))
     profession = db.Column(db.String(100))
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'message': self.message,
+            'image': self.image,
+            'name': self.name,
+            'profession': self.profession
+        }
 class Facility(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     color = db.Column(db.String(50))
@@ -89,11 +108,53 @@ class Facility(db.Model):
     name = db.Column(db.String(100))
     description = db.Column(db.String(500))
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'color': self.color,
+            'icon': self.icon,
+            'name': self.name,
+            'description': self.description,
+        }
+
 class Teacher(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     image = db.Column(db.String(100))
     profession = db.Column(db.String(100))
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'image': self.image,
+            'profession': self.profession
+        }
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date_ordered = db.Column(db.DateTime, default=datetime.utcnow)
+    items = db.relationship('OrderItem', backref='order', lazy=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'date_ordered': self.date_ordered,
+            'items': [item.to_dict() for item in self.items]
+        }
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    quantity = db.Column(db.Integer, default=1)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'product_id': self.product_id,
+            'order_id': self.order_id,
+            'quantity': self.quantity
+        }
     
